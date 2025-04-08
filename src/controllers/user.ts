@@ -109,4 +109,28 @@ const loginWithGoogle = async (req: any, res: any) => {
     });
   }
 };
-export { register, login, loginWithGoogle };
+const refreshToken = async (req: any, res: any) => {
+  const id = req._id;
+  try {
+    const user: any = await UserModel.findById(id);
+    if (!user) {
+      throw new Error(`Tai khoan khong ton tai`);
+    }
+    res.status(200).json({
+      message: ``,
+      data: {
+        ...user._doc,
+        token: await getAccesstoken({
+          _id: user._id,
+          email: user.email,
+          rule: user.rule,
+        }),
+      },
+    });
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message,
+    });
+  }
+};
+export { register, login, loginWithGoogle, refreshToken };
